@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <style>
+    #sakana-widget {
+      /* 確保元素固定在視窗上，不隨頁面內容滾動 */
+      position: fixed !important; 
+      right: 10px !important;
+      bottom: 10px !important;
+      z-index: 99999 !important; 
+    }
+  </style>
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css"
+  />
+
+  <body>
+
+    {%- include header.html -%}
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        {{ content }} 
+      </div>
+    </main>
+
+    {%- include footer.html -%}
+
+    <div id="sakana-widget"></div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"
+    ></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        new SakanaWidget({
+          // 設定大小，如果預設顯示太小可以調整
+          size: 200, 
+        }).mount('#sakana-widget'); // 掛載到 #sakana-widget 容器
+      });
+    </script>
+    
+  </body>
+
+</html>

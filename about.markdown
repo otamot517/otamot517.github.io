@@ -9,7 +9,7 @@ permalink: /about/
 就讀高雄市立新莊高中
 
 擔任新莊電研社社長
-[社網](crhc.club)
+[社網](https://www.crhc.club/)
 
 This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
 

@@ -10,6 +10,7 @@ permalink: /about/
 
 擔任新莊電研社社長
 [社網](https://www.crhc.club/)
+目前很努力提升自己的實力，APCS已經4/3了，但想要把實作拉到4。
 
 This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
 

@@ -1,75 +1,125 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: "en" }}">
-
+<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
   {%- include head.html -%}
 
-  <link rel="apple-touch-icon" sizes="57x57" href="{{ '/assets/favicons/apple-icon-57x57.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="60x60" href="{{ '/assets/favicons/apple-icon-60x60.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="72x72" href="{{ '/assets/favicons/apple-icon-72x72.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="76x76" href="{{ '/assets/favicons/apple-icon-76x76.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="114x114" href="{{ '/assets/favicons/apple-icon-114x114.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="120x120" href="{{ '/assets/favicons/apple-icon-120x120.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="144x144" href="{{ '/assets/favicons/apple-icon-144x144.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="152x152" href="{{ '/assets/favicons/apple-icon-152x152.png' | relative_url }}">
-  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/favicons/apple-icon-180x180.png' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="192x192" href="{{ '/assets/favicons/android-icon-192x192.png' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/favicons/favicon-32x32.png' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="96x96" href="{{ '/assets/favicons/favicon-96x96.png' | relative_url }}">
-  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/favicons/favicon-16x16.png' | relative_url }}">
-  <link rel="manifest" href="{{ '/assets/favicons/manifest.json' | relative_url }}">
-  <meta name="msapplication-TileColor" content="#ffffff">
-  <meta name="msapplication-TileImage" content="{{ '/assets/favicons/ms-icon-144x144.png' | relative_url }}">
-  <meta name="theme-color" content="#ffffff">
-
   <style>
-    #sakana-widget {
-      position: fixed !important; 
-      right: 10px !important;
-      bottom: 10px !important;
-      z-index: 99999 !important; 
+    :root {
+      --sidebar-width: 280px;
+      --sidebar-bg: #1e1e1e; /* 參考 Gemini 的深色底 */
+      --content-bg: #ffffff;
+      --transition-speed: 0.3s;
     }
-    /* 建立左右並排的容器 */
+
+    body { margin: 0; font-family: sans-serif; overflow-x: hidden; }
+
+    /* 頂部控制列 (手機版或收合時顯示) */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: var(--content-bg);
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
     .site-container {
       display: flex;
-      min-height: 100vh;
+      transition: all var(--transition-speed);
     }
-    /* 右側內容區 */
+
+    /* 側邊欄基礎樣式 */
+    .sidebar-wrapper {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      color: #fff;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      transition: transform var(--transition-speed);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    /* 收合狀態：將側邊欄推出去 */
+    .collapsed .sidebar-wrapper {
+      transform: translateX(-100%);
+    }
+
+    /* 內容區樣式 */
     .main-content {
       flex: 1;
-      padding: 2rem;
-      margin-left: 260px; /* 這裡的寬度要跟側邊欄一致 */
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+      transition: margin var(--transition-speed);
+      background: var(--content-bg);
     }
-    /* 手機版適應 (簡易版) */
-    @media (max-width: 800px) {
-      .main-content { margin-left: 0; }
+
+    .collapsed .main-content {
+      margin-left: 0;
     }
+
+    /* 按鈕樣式 */
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px 15px;
+    }
+
+    /* 側邊欄內的細節美化 */
+    .sidebar-header { padding: 20px; display: flex; align-items: center; gap: 10px; }
+    .sidebar-logo img { width: 32px; border-radius: 8px; }
+    .nav-label { font-size: 12px; color: #888; padding: 10px 25px; text-transform: uppercase; }
+    .nav-item { 
+      padding: 12px 25px; 
+      display: flex; 
+      align-items: center; 
+      gap: 15px; 
+      color: #ccc; 
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .nav-item:hover { background: #333; color: #fff; border-radius: 0 25px 25px 0; margin-right: 10px; }
+
+    /* Sakana Widget 修正 */
+    #sakana-widget { position: fixed !important; right: 20px !important; bottom: 20px !important; z-index: 999; }
   </style>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css" />
-
   <body>
-    <div class="site-container">
-      
+    <div class="top-bar">
+      <button id="sidebar-toggle-open" class="toggle-btn" style="color:#333">☰</button>
+      <span style="margin-left:10px; font-weight:bold;">{{ page.title }}</span>
+    </div>
+
+    <div class="site-container" id="site-wrapper">
       {%- include sidebar.html -%}
 
-      <main class="main-content" aria-label="Content">
-        <div class="wrapper">
-          {{ content }} 
+      <main class="main-content">
+        <div class="wrapper" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+          {{ content }}
         </div>
         {%- include footer.html -%}
       </main>
-
     </div>
 
-    <div id="sakana-widget"></div>
-    <script src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        new SakanaWidget({
-          size: 200, 
-        }).mount('#sakana-widget');
-      });
+      const wrapper = document.getElementById('site-wrapper');
+      const btnOpen = document.getElementById('sidebar-toggle-open');
+      const btnClose = document.getElementById('sidebar-toggle-close');
+
+      function toggleSidebar() {
+        wrapper.classList.toggle('collapsed');
+      }
+
+      btnOpen.onclick = toggleSidebar;
+      btnClose.onclick = toggleSidebar;
     </script>
-    
-  </body>
+
+    </body>
 </html>

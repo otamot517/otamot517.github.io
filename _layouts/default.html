@@ -2,22 +2,31 @@
 <html lang="{{ page.lang | default: site.lang | default: 'en' }}">
   {%- include head.html -%}
 
+  <link rel="apple-touch-icon" sizes="57x57" href="{{ '/assets/favicons/apple-icon-57x57.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/favicons/apple-icon-180x180.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/favicons/favicon-32x32.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/favicons/favicon-16x16.png' | relative_url }}">
+  <link rel="manifest" href="{{ '/assets/favicons/manifest.json' | relative_url }}">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css"/>
+
   <style>
     :root {
       --sidebar-width: 280px;
-      --sidebar-bg: #1e1e1e; /* 參考 Gemini 的深色底 */
+      --sidebar-bg: #1e1e1e;
       --content-bg: #ffffff;
       --transition-speed: 0.3s;
     }
 
-    body { margin: 0; font-family: sans-serif; overflow-x: hidden; }
+    body { margin: 0; font-family: sans-serif; overflow-x: hidden; background: var(--content-bg); }
 
-    /* 頂部控制列 (手機版或收合時顯示) */
+    /* 頂部控制列 */
     .top-bar {
       display: flex;
       align-items: center;
       padding: 10px 20px;
-      background: var(--content-bg);
+      background: #fff;
       border-bottom: 1px solid #eee;
       position: sticky;
       top: 0;
@@ -29,7 +38,7 @@
       transition: all var(--transition-speed);
     }
 
-    /* 側邊欄基礎樣式 */
+    /* 側邊欄樣式 */
     .sidebar-wrapper {
       width: var(--sidebar-width);
       background: var(--sidebar-bg);
@@ -44,55 +53,38 @@
       z-index: 1000;
     }
 
-    /* 收合狀態：將側邊欄推出去 */
-    .collapsed .sidebar-wrapper {
-      transform: translateX(-100%);
-    }
+    /* 收合狀態 */
+    .collapsed .sidebar-wrapper { transform: translateX(-100%); }
 
-    /* 內容區樣式 */
+    /* 內容區：修正 Minima 炸裂 */
     .main-content {
       flex: 1;
       margin-left: var(--sidebar-width);
       min-height: 100vh;
       transition: margin var(--transition-speed);
-      background: var(--content-bg);
     }
 
-    .collapsed .main-content {
-      margin-left: 0;
+    .collapsed .main-content { margin-left: 0; }
+
+    /* 強制限制內容寬度，防止排版炸裂 */
+    .wrapper {
+      max-width: 800px !important;
+      margin: 0 auto !important;
+      padding: 40px 20px !important;
     }
 
-    /* 按鈕樣式 */
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: inherit;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 5px 15px;
-    }
+    .toggle-btn { background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px 15px; }
 
-    /* 側邊欄內的細節美化 */
-    .sidebar-header { padding: 20px; display: flex; align-items: center; gap: 10px; }
-    .sidebar-logo img { width: 32px; border-radius: 8px; }
-    .nav-label { font-size: 12px; color: #888; padding: 10px 25px; text-transform: uppercase; }
-    .nav-item { 
-      padding: 12px 25px; 
-      display: flex; 
-      align-items: center; 
-      gap: 15px; 
-      color: #ccc; 
-      text-decoration: none;
-      transition: 0.2s;
+    /* Sakana Widget 位置與層級 */
+    #sakana-widget { 
+      position: fixed !important; 
+      right: 20px !important; 
+      bottom: 20px !important; 
+      z-index: 99999 !important; 
     }
-    .nav-item:hover { background: #333; color: #fff; border-radius: 0 25px 25px 0; margin-right: 10px; }
-
-    /* Sakana Widget 修正 */
-    #sakana-widget { position: fixed !important; right: 20px !important; bottom: 20px !important; z-index: 999; }
   </style>
 
-  <body>
-    <div class="top-bar">
+  <body class=""> <div class="top-bar">
       <button id="sidebar-toggle-open" class="toggle-btn" style="color:#333">☰</button>
       <span style="margin-left:10px; font-weight:bold;">{{ page.title }}</span>
     </div>
@@ -101,25 +93,37 @@
       {%- include sidebar.html -%}
 
       <main class="main-content">
-        <div class="wrapper" style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+        <div class="wrapper">
           {{ content }}
         </div>
         {%- include footer.html -%}
       </main>
     </div>
 
+    <div id="sakana-widget"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"></script>
     <script>
-      const wrapper = document.getElementById('site-wrapper');
-      const btnOpen = document.getElementById('sidebar-toggle-open');
-      const btnClose = document.getElementById('sidebar-toggle-close');
+      // A. 側邊欄收合邏輯 (加入安全檢查)
+      document.addEventListener('DOMContentLoaded', function() {
+        const wrapper = document.getElementById('site-wrapper');
+        const btnOpen = document.getElementById('sidebar-toggle-open');
+        const btnClose = document.getElementById('sidebar-toggle-close'); // 需在 sidebar.html 內
 
-      function toggleSidebar() {
-        wrapper.classList.toggle('collapsed');
-      }
+        function toggle() {
+          wrapper.classList.toggle('collapsed');
+          document.body.classList.toggle('collapsed');
+        }
 
-      btnOpen.onclick = toggleSidebar;
-      btnClose.onclick = toggleSidebar;
+        if (btnOpen) btnOpen.onclick = toggle;
+        if (btnClose) btnClose.onclick = toggle;
+
+        // B. 初始化 Sakana Widget
+        new SakanaWidget({
+          size: 200,
+          autoFit: true,
+        }).mount('#sakana-widget');
+      });
     </script>
-
-    </body>
+  </body>
 </html>

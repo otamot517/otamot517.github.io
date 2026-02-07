@@ -2,65 +2,74 @@
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
 
   {%- include head.html -%}
-<link rel="apple-touch-icon" sizes="57x57" href="{{ '/assets/favicons/apple-icon-57x57.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="60x60" href="{{ '/assets/favicons/apple-icon-60x60.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="72x72" href="{{ '/assets/favicons/apple-icon-72x72.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="76x76" href="{{ '/assets/favicons/apple-icon-76x76.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="114x114" href="{{ '/assets/favicons/apple-icon-114x114.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="120x120" href="{{ '/assets/favicons/apple-icon-120x120.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="144x144" href="{{ '/assets/favicons/apple-icon-144x144.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="152x152" href="{{ '/assets/favicons/apple-icon-152x152.png' | relative_url }}">
-<link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/favicons/apple-icon-180x180.png' | relative_url }}">
-<link rel="icon" type="image/png" sizes="192x192" href="{{ '/assets/favicons/android-icon-192x192.png' | relative_url }}">
-<link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/favicons/favicon-32x32.png' | relative_url }}">
-<link rel="icon" type="image/png" sizes="96x96" href="{{ '/assets/favicons/favicon-96x96.png' | relative_url }}">
-<link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/favicons/favicon-16x16.png' | relative_url }}">
-<link rel="manifest" href="{{ '/assets/favicons/manifest.json' | relative_url }}">
-<meta name="msapplication-TileColor" content="#ffffff">
-<meta name="msapplication-TileImage" content="{{ '/assets/favicons/ms-icon-144x144.png' | relative_url }}">
-<meta name="theme-color" content="#ffffff">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="{{ '/assets/favicons/apple-icon-57x57.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="60x60" href="{{ '/assets/favicons/apple-icon-60x60.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="72x72" href="{{ '/assets/favicons/apple-icon-72x72.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ '/assets/favicons/apple-icon-76x76.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="114x114" href="{{ '/assets/favicons/apple-icon-114x114.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="120x120" href="{{ '/assets/favicons/apple-icon-120x120.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="144x144" href="{{ '/assets/favicons/apple-icon-144x144.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="152x152" href="{{ '/assets/favicons/apple-icon-152x152.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/favicons/apple-icon-180x180.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ '/assets/favicons/android-icon-192x192.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/favicons/favicon-32x32.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="96x96" href="{{ '/assets/favicons/favicon-96x96.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/favicons/favicon-16x16.png' | relative_url }}">
+  <link rel="manifest" href="{{ '/assets/favicons/manifest.json' | relative_url }}">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="{{ '/assets/favicons/ms-icon-144x144.png' | relative_url }}">
+  <meta name="theme-color" content="#ffffff">
+
   <style>
     #sakana-widget {
-      /* 確保元素固定在視窗上，不隨頁面內容滾動 */
       position: fixed !important; 
       right: 10px !important;
       bottom: 10px !important;
       z-index: 99999 !important; 
     }
+    /* 建立左右並排的容器 */
+    .site-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* 右側內容區 */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      margin-left: 260px; /* 這裡的寬度要跟側邊欄一致 */
+    }
+    /* 手機版適應 (簡易版) */
+    @media (max-width: 800px) {
+      .main-content { margin-left: 0; }
+    }
   </style>
 
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css"
-  />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css" />
 
   <body>
+    <div class="site-container">
+      
+      {%- include sidebar.html -%}
 
-    {%- include header.html -%}
+      <main class="main-content" aria-label="Content">
+        <div class="wrapper">
+          {{ content }} 
+        </div>
+        {%- include footer.html -%}
+      </main>
 
-    <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        {{ content }} 
-      </div>
-    </main>
-
-    {%- include footer.html -%}
+    </div>
 
     <div id="sakana-widget"></div>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"
-    ></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
         new SakanaWidget({
-          // 設定大小，如果預設顯示太小可以調整
           size: 200, 
-        }).mount('#sakana-widget'); // 掛載到 #sakana-widget 容器
+        }).mount('#sakana-widget');
       });
     </script>
     
   </body>
-
 </html>

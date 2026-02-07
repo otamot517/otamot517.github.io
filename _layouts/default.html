@@ -12,19 +12,22 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css"/>
 
   <style>
-    /* --- CSS 變數設定 --- */
+    /* --- CSS 變數設定 (顏色反轉區) --- */
     :root {
       --sidebar-width: 260px;
-      --sidebar-bg: #1e1e1e;       /* 深色背景 */
-      --sidebar-text: #ffffff;     /* 淺灰文字 */
-      --sidebar-hover: #6e6e6e;    /* 滑鼠懸停顏色 */
+      
+      /* [修改點] 背景改為淺灰，文字改為深灰 */
+      --sidebar-bg: #f8f9fa;       
+      --sidebar-text: #333333;     
+      --sidebar-hover: #e9ecef;    /* 滑鼠懸停時變成稍微深一點的灰 */
+      
       --content-bg: #ffffff;
       --transition-speed: 0.3s;
     }
 
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow-x: hidden; background: var(--content-bg); }
 
-    /* --- 1. 頂部控制列 (Top Bar) --- */
+    /* --- 1. 頂部控制列 --- */
     .top-bar {
       display: flex;
       align-items: center;
@@ -37,11 +40,11 @@
       height: 50px;
     }
 
-    /* --- 2. 側邊欄樣式 (Sidebar) --- */
+    /* --- 2. 側邊欄樣式 --- */
     .sidebar-wrapper {
       width: var(--sidebar-width);
       background: var(--sidebar-bg);
-      color: var(--sidebar-text); /* 強制文字顏色 */
+      color: var(--sidebar-text);
       height: 100vh;
       position: fixed;
       left: 0;
@@ -50,13 +53,12 @@
       display: flex;
       flex-direction: column;
       z-index: 1000;
-      border-right: 1px solid #757575;
+      border-right: 1px solid #e0e0e0; /* 邊框改為淺灰色 */
     }
 
-    /* 收合狀態 */
     .collapsed .sidebar-wrapper { transform: translateX(-100%); }
 
-    /* 修正：側邊欄內的圖片與 Logo (解決圖片巨大化問題) */
+    /* 側邊欄頭部 */
     .sidebar-header {
       padding: 20px;
       display: flex;
@@ -64,7 +66,7 @@
       gap: 15px;
     }
     
-    /* 關鍵修正：限制圖片最大寬度 */
+    /* 圖片尺寸限制 (維持之前的修正) */
     .sidebar-header img, .sidebar-brand img, .sidebar-logo img {
       width: 40px !important; 
       height: 40px !important;
@@ -73,40 +75,44 @@
     }
 
     .sidebar-header a {
-      color: #fff;
+      color: var(--sidebar-text); /* 跟隨變數 */
       text-decoration: none;
       font-weight: bold;
       font-size: 1.1rem;
     }
 
-    /* 修正：導航連結樣式 (解決文字看不清楚) */
+    /* 導航連結樣式 */
     .sidebar-nav a, .nav-item {
       display: flex;
       align-items: center;
       gap: 12px;
       padding: 12px 25px;
-      color: #bbbbbb !important; /* 淺灰色 */
+      color: #555555 !important; /* 連結預設深灰色 */
       text-decoration: none;
       transition: 0.2s;
       font-size: 0.95rem;
     }
 
+    /* 滑鼠懸停效果 */
     .sidebar-nav a:hover, .nav-item:hover {
       background-color: var(--sidebar-hover);
-      color: #ffffff !important; /* 滑鼠滑過變亮白 */
-      padding-left: 30px; /* 小小的位移動畫 */
+      color: #000000 !important; /* 滑過時變純黑 */
+      padding-left: 30px; 
+      border-radius: 0 8px 8px 0; /* 加一點圓角比較好看 */
+      margin-right: 10px;
     }
 
-    /* 分類標籤樣式 */
+    /* 分類標籤 */
     .nav-label {
       font-size: 0.75rem;
-      color: #666;
+      color: #888; /* 淺灰標籤 */
       padding: 15px 25px 5px;
       text-transform: uppercase;
       letter-spacing: 1px;
+      font-weight: 600;
     }
 
-    /* --- 3. 內容區樣式 (Main Content) --- */
+    /* --- 3. 內容區樣式 --- */
     .site-container { display: flex; transition: all var(--transition-speed); }
 
     .main-content {
@@ -118,20 +124,19 @@
 
     .collapsed .main-content { margin-left: 0; }
 
-    /* 內容容器限制 (防止炸裂) */
     .wrapper {
       max-width: 850px !important;
       margin: 0 auto !important;
       padding: 40px 20px !important;
     }
 
-    /* 按鈕樣式 */
+    /* 按鈕樣式 (改為深色) */
     .toggle-btn, .icon-btn { 
       background: none; border: none; cursor: pointer; font-size: 24px; padding: 5px; color: inherit; 
     }
-    #sidebar-toggle-close { color: #fff; } /* 側邊欄內的按鈕強制白色 */
+    #sidebar-toggle-close { color: #555; } /* 側邊欄內的按鈕改為深灰 */
 
-    /* --- 4. Sakana Widget 位置 --- */
+    /* --- 4. Sakana Widget --- */
     #sakana-widget { 
       position: fixed !important; 
       right: 20px !important; 
@@ -165,7 +170,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // 1. 側邊欄收合邏輯
         const wrapper = document.getElementById('site-wrapper');
         const btnOpen = document.getElementById('sidebar-toggle-open');
         const btnClose = document.getElementById('sidebar-toggle-close');
@@ -178,7 +182,6 @@
         if (btnOpen) btnOpen.onclick = toggle;
         if (btnClose) btnClose.onclick = toggle;
 
-        // 2. Sakana Widget 初始化
         new SakanaWidget({
           size: 200,
           autoFit: true,
